@@ -125,9 +125,9 @@ class MediaLibrary
     /**
      * Finds files in the Library.
      * @param string $searchTerm Specifies the search term.
-     * @param string $sortBy Determines the sorting preference. 
+     * @param string $sortBy Determines the sorting preference.
      * Supported values are 'title', 'size', 'lastModified' (see SORT_BY_XXX class constants).
-     * @param string $filter Determines the document type filtering preference. 
+     * @param string $filter Determines the document type filtering preference.
      * Supported values are 'image', 'video', 'audio', 'document' (see FILE_TYPE_XXX constants of MediaLibraryItem class).
      * @return array Returns an array of MediaLibraryItem objects.
      */
@@ -384,7 +384,10 @@ class MediaLibrary
         if ($normalizeOnly)
             return $path;
 
-        if (strpos($path, '..') !== false)
+        /**
+         * It is valid for file names to contain two dots.
+         */
+        if (strpos($path, '..') === 0 || strpos($path, '/..') !== false)
             throw new ApplicationException(Lang::get('cms::lang.media.invalid_path', ['path'=>$path]));
 
         if (strpos($path, './') !== false || strpos($path, '//') !== false)
@@ -537,7 +540,7 @@ class MediaLibrary
     /**
      * Sorts the item list by title, size or last modified date.
      * @param array $itemList Specifies the item list to sort.
-     * @param string $sortBy Determines the sorting preference. 
+     * @param string $sortBy Determines the sorting preference.
      * Supported values are 'title', 'size', 'lastModified' (see SORT_BY_XXX class constants).
      */
     protected function sortItemList(&$itemList, $sortBy)
@@ -567,7 +570,7 @@ class MediaLibrary
     /**
      * Filters item list by file type.
      * @param array $itemList Specifies the item list to sort.
-     * @param string $filter Determines the document type filtering preference. 
+     * @param string $filter Determines the document type filtering preference.
      * Supported values are 'image', 'video', 'audio', 'document' (see FILE_TYPE_XXX constants of MediaLibraryItem class).
      */
     protected function filterItemList(&$itemList, $filter)
@@ -586,7 +589,7 @@ class MediaLibrary
 
     /**
      * Initializes and returns the Media Library disk.
-     * This method should always be used instead of trying to access the 
+     * This method should always be used instead of trying to access the
      * $storageDisk property directly as initializing the disc requires
      * communicating with the remote storage.
      * @return mixed Returns the storage disk object.
